@@ -1,8 +1,9 @@
-module.exports={
-    USERS:"users",
-    PRODUCTS:"products",
-    ORDERS:"orders",
-    CART:"cart",
-    FAV:"favourites",
-    PLACED:"placed"
+module.exports = {
+    USERS: "users",
+    PENDING: "pending",
+    PRODUCTS: "products",
+    ORDERS: "orders",
+    CART: "cart",
+    FAV: "favourites",
+    PLACED: "placed"
 }

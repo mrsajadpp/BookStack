@@ -1,0 +1,34 @@
+<div class="container">
+    <div class="addressarea">
+        <form action="/add" method="post" class="form">
+          <div class="input first">
+            <input type="text" name="firstname" id="firstname" placeholder="First Name" required>
+            <span>&nbsp;&nbsp;</span>
+            <input type="text" name="lastname" id="lastname" placeholder="Last Name" required>
+          </div>
+          <div class="input number">
+            <input type="text" name="countrycode" id="countrycode" readonly value="+91" required>
+            <span>&nbsp;&nbsp;</span>
+            <input type="number" name="phonenumber" id="phonenumber" placeholder="Number" required>
+          </div>
+          <div class="input">
+            <input type="text" name="country" id="country" value="INDIA" readonly required>
+          </div>
+          <div class="input">
+            <input type="text" name="state" id="state" placeholder="State" required>
+          </div>
+          <div class="input">
+            <input type="text" name="city" id="city" placeholder="City" required>
+          </div>
+          <div class="input">
+            <input type="text" name="adress" id="adress" placeholder="Adress" required>
+          </div>
+          <div class="input">
+            <input type="number" name="pincode" id="pincode" placeholder="Pincode" required>
+          </div>
+          <div class="input btn">
+            <button type="submit">PLACE ORDER</button>
+          </div>
+        </form>
+    </div>
+</div>

@@ -1,19 +1,21 @@
-let db = require('./config.js')
-let COLLECTIONS = require('./collections.js')
+const db = require('./config.js')
+const COLLECTIONS = require('./collections.js');
 const ObjectId = require('mongodb').ObjectID;
 
 module.exports = {
     addProduct: (product, callback) => {
-        product.price = parseInt(product.price);
-        product.oldPrice = parseInt(product.oldPrice);
         db.get().collection(COLLECTIONS.PRODUCTS).insertOne(product).then((data) => {
             callback(data.insertedId.toString());
         });
     },
-    getAllProducts: (callback) => {
+    getAllProducts: () => {
         return new Promise(async (resolve, reject) => {
-            let products = await db.get().collection(COLLECTIONS.PRODUCTS).find().toArray();
-            resolve(products);
+            let products = await db.get().collection(COLLECTIONS.PRODUCTS).find().toArray()
+            if (products) {
+                resolve(products);
+            } else {
+                reject(false)
+            }
         });
     },
     getAllOrders: () => {
@@ -56,13 +58,13 @@ module.exports = {
     },
     upProd: (prodId) => {
         return new Promise(async (resolve, reject) => {
-            let proObjId = ObjectId(prodId);
-            let product = await db.get().collection(COLLECTIONS.PRODUCTS).updateOne({ _id: proObjId });
-            if (product) {
-                resolve(true);
-            } else {
-                resolve(false);
-            }
+            db.get().collection(COLLECTIONS.PRODUCTS).updateOne({ _id: ObjectId(prodId) }).then((product) = {
+                if(product) {
+                    resolve(true);
+                }
+            }).catch((err) => {
+                reject(false)
+            });
         });
     },
     updateCart: (productId, userId) => {
@@ -100,6 +102,13 @@ module.exports = {
                     resolve()
                 })
             }
+        })
+    },
+    getProduct: (prod_id) => {
+        return new Promise((resolve, reject) => {
+            db.get().collection(COLLECTIONS.PRODUCTS).findOne({ _id: ObjectId(prod_id) }).then((product) => {
+                resolve(product)
+            })
         })
     },
     addFav: (productId, userId) => {

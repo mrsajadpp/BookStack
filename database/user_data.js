@@ -3,12 +3,12 @@ let COLLECTIONS = require('./collections.js')
 const ObjectId = require('mongodb').ObjectID;
 var bcrypt = require('bcrypt');
 var crypto = require('crypto')
-const Razorpay = require('razorpay')
+const Razorpay = require('razorpay');
 const saltRounds = 10;
 var instance = new Razorpay({
     key_id: 'rzp_test_IZT277pRk7J4jj',
     key_secret: 'daqJhwEsKL9tBTX4DHySsXoU'
-  });
+});
 
 module.exports = {
     findUser: async (userData) => {
@@ -34,20 +34,51 @@ module.exports = {
             }
         });
     },
-    createUser: async (userData) => {
+    findPendingUser: (userId) => {
         return new Promise(async (resolve, reject) => {
-            let agread = await db.get().collection(COLLECTIONS.USERS).findOne({ username: userData.username });
+            let user = await db.get().collection(COLLECTIONS.PENDING).findOne({ _id: ObjectId(userId) })
+                resolve(user)
+        })
+    },
+    createPendingUser: (userData) => {
+        return new Promise(async (resolve, reject) => {
+            let agread = await db.get().collection(COLLECTIONS.PENDING).findOne({ username: userData.data.username });
             if (agread) {
                 reject(agread)
             } else {
-                userData.password = await bcrypt.hash(userData.password, saltRounds)
-                await db.get().collection(COLLECTIONS.USERS).insertOne(userData).then((data, err) => {
+                userData.username = userData.data.username
+                userData.data.password = await bcrypt.hash(userData.data.password, saltRounds)
+                await db.get().collection(COLLECTIONS.PENDING).insertOne(userData).then((data, err) => {
                     if (!err) {
-                        let user = db.get().collection(COLLECTIONS.USERS).findOne({ _id: data.insertedId })
+                        let user = db.get().collection(COLLECTIONS.PENDING).findOne({ _id: data.insertedId })
                         if (user) {
                             resolve(user)
                         } else {
-                            reject(false)
+                            reject(db.get().collection(COLLECTIONS.PENDING).findOne({ username: userData.user.username }))
+                        }
+                    } else {
+                        reject(err)
+                        throw err
+                    }
+                })
+            }
+        })
+    },
+    createUser: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            let userData = await db.get().collection(COLLECTIONS.PENDING).findOne({ _id: ObjectId(userId) });
+            let agread = await db.get().collection(COLLECTIONS.USERS).findOne({ username: userData.data.username });
+            if (agread) {
+                reject(false)
+            } else {
+                await db.get().collection(COLLECTIONS.USERS).insertOne(userData.data).then((data, err) => {
+                    if (!err) {
+                        let user = db.get().collection(COLLECTIONS.USERS).findOne({ _id: data.insertedId })
+                        if (user) {
+                            db.get().collection(COLLECTIONS.PENDING).deleteOne({ _id:userData._id })
+                            resolve(user)
+                        } else {
+                            reject(db.get().collection(COLLECTIONS.USERS).findOne({ username: userData.user.username }))
                         }
                     } else {
                         reject(err)
@@ -92,8 +123,6 @@ module.exports = {
             let hmac = crypto.createHmac('sha256', 'daqJhwEsKL9tBTX4DHySsXoU');
             hmac.update(details['payment[razorpay_order_id]'] + '|' + details['payment[razorpay_payment_id]']);
             hmac = hmac.digest('hex');
-            console.log(hmac)
-            console.log(details['payment[razorpay_signature]'])
             if (hmac == details['payment[razorpay_signature]']) {
                 db.get().collection(COLLECTIONS.CART).deleteOne({ user: ObjectId(userId) });
                 resolve(true);
@@ -112,5 +141,18 @@ module.exports = {
                 resolve();
             });
         });
+    },
+    findUserName: (userName) => {
+        return new Promise((resolve, reject) => {
+            db.get().collection(COLLECTIONS.USERS).findOne({ username: userName }).then((response) => {
+                if (response.username == userName) {
+                    resolve({ status: true })
+                } else {
+                    resolve({ status: false })
+                }
+            }).catch((response) => {
+                resolve({ status: false })
+            })
+        })
     }
 }

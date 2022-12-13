@@ -1,0 +1,56 @@
+<div class="container">
+    <div class="card">
+        <div class="imgContainer">
+            <img src="/images/products/{{product._id}}/0.jpeg" alt="{{product.title}} - Basket">
+            <img src="/images/products/{{product._id}}/1.jpeg">
+        </div>
+        <div class="infoBox">
+            <div class="rating">
+
+            </div>
+            <div class="title">
+                {{product.title}}
+            </div>
+            <div class="price">
+                {{#if product.old_price}}
+                <span class="p_price">&#x20B9;{{product.price}}</span>&nbsp;<span
+                    class="old_price">&#x20B9;{{product.old_price}}</span>
+                {{else}}
+                <span class="p_price">&#x20B9;{{product.price}}</span>
+                {{/if}}
+            </div>
+            <div class="delivery">
+                {{#if product.delivery_charge}}
+                <span>Delivery charge: <span>&#x20B9;{{product.delivery_charge}}</span></span>
+                {{else}}
+                {{/if}}
+            </div>
+            {{#if product}}
+            <div class="size">
+                <div class="input">
+                    <select name="size" id="size">
+                        {{#each product.size}}
+                        <option value="{{this.type}}">{{this.type}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+            </div>
+            {{/if}}
+            <div class="description">
+                {{product.description}}
+            </div>
+            <div class="gap">
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+    <div class="buttonGroup">
+        <button title="Buy This Product" class="buy" onclick="loadPage('/buy/{{product._id}}');">
+            BUY
+        </button>
+        <button title="Add To Cart This Product" class="addToCart" onclick="loadPage('/addtocart/{{product._id}}');">
+            <box-icon name='cart-add' color='#fff'></box-icon>
+        </button>
+    </div>
+</div>

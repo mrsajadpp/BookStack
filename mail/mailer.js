@@ -8,21 +8,16 @@ async function mail(message) {
     port: 587,
     secure: false,
     auth: {
-      user: 'advisstoree@gmail.com', 
-      pass: 'offctpfvjpnxxino'
+      user: 'help.traceinc@gmail.com', 
+      pass: 'gtlaweiiqczgzzmd'
     },
   });
   let info = await transporter.sendMail({
-    from: '"Advis Store" dev.traceinc@gmail.com',
+    from: '"Basket" help.traceinc@gmail.com',
     to: message.email,
     subject: message.title,
     text: message.text,
     html: message.content,
-    /*attachments: [
-        {
-            filename: 'document.pdf',
-            contentType: 'application/pdf'
-        }]*/
   });
   return true;
 }
